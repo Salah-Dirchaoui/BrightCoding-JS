@@ -11,7 +11,10 @@ form.addEventListener('submit', (e) => {
   };
   db.collection('courses')
     .add(course)
-    .then((res) => console.log(res, 'course added'))
+    .then((res) => {
+      form.reset();
+      console.log(res, 'course added');
+    })
     .catch((err) => console.error(err));
 });
 // to delete a course from firstor no UI update
@@ -28,7 +31,7 @@ list.addEventListener('click', (e) => {
 });
 
 // to retreive data from firestore to UI
-addCourse = (course, id) => {
+const addCourse = (course, id) => {
   const html = `
   <li class="list-group-item" data-id="${id}">
   <h3>${course.title}</h3>
@@ -39,13 +42,15 @@ addCourse = (course, id) => {
   list.innerHTML += html;
 };
 // to delete course and update UI
-deleteCourse = (id) => {
-  const courses = document.querySelectorAll('li');
-  courses.forEach((course) => {
-    if (course.getAttribute('data-id') === id) {
-      course.remove();
-    }
-  });
+const deleteCourse = (id) => {
+  if (confirm('Are you sûre to delete this course ?')) {
+    const courses = document.querySelectorAll('li');
+    courses.forEach((course) => {
+      if (course.getAttribute('data-id') === id) {
+        course.remove();
+      }
+    });
+  }
 };
 // to get data from firstore
 db.collection('courses').onSnapshot((snap) => {
