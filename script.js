@@ -22,11 +22,13 @@ list.addEventListener('click', (e) => {
   if (e.target.tagName === 'BUTTON') {
     e.preventDefault();
     let id = e.target.parentElement.getAttribute('data-id');
-    db.collection('courses')
-      .doc(id)
-      .delete()
-      .then(() => console.log('course deleted'))
-      .catch((err) => console.error(err));
+    if (confirm('Are you sûre to delete this course ?')) {
+      db.collection('courses')
+        .doc(id)
+        .delete()
+        .then(() => console.log('course deleted'))
+        .catch((err) => console.error(err));
+    }
   }
 });
 
@@ -43,14 +45,12 @@ const addCourse = (course, id) => {
 };
 // to delete course and update UI
 const deleteCourse = (id) => {
-  if (confirm('Are you sûre to delete this course ?')) {
-    const courses = document.querySelectorAll('li');
-    courses.forEach((course) => {
-      if (course.getAttribute('data-id') === id) {
-        course.remove();
-      }
-    });
-  }
+  const courses = document.querySelectorAll('li');
+  courses.forEach((course) => {
+    if (course.getAttribute('data-id') === id) {
+      course.remove();
+    }
+  });
 };
 // to get data from firstore
 db.collection('courses').onSnapshot((snap) => {
