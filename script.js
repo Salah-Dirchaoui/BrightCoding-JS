@@ -14,13 +14,25 @@ form.addEventListener('submit', (e) => {
     .then((res) => console.log(res, 'course added'))
     .catch((err) => console.error(err));
 });
+list.addEventListener('click', (e) => {
+  if (e.target.tagName === 'BUTTON') {
+    e.preventDefault();
+    let id = e.target.parentElement.getAttribute('data-id');
+    db.collection('courses')
+      .doc(id)
+      .delete()
+      .then(() => console.log('course deleted'))
+      .catch((err) => console.error(err));
+  }
+});
 
 // to retreive data from firestore to UI
-addCourse = (course) => {
+addCourse = (course, id) => {
   const html = `
-  <li class="list-group-item">
+  <li class="list-group-item" data-id="${id}">
   <h3>${course.title}</h3>
   <small>${course.created_at.toDate()}</small>
+  <button class="btn btn-danger btn-sm my-2">Delete</button>
   </li>
   `;
   list.innerHTML += html;
@@ -30,7 +42,7 @@ db.collection('courses')
   .get()
   .then((res) =>
     res.docs.forEach((course) => {
-      addCourse(course.data());
+      addCourse(course.data(), course.id);
     })
   )
   .catch((err) => console.log(err));
