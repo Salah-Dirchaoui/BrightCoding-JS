@@ -14,6 +14,7 @@ form.addEventListener('submit', (e) => {
     .then((res) => console.log(res, 'course added'))
     .catch((err) => console.error(err));
 });
+// to delete a course from firstor no UI update
 list.addEventListener('click', (e) => {
   if (e.target.tagName === 'BUTTON') {
     e.preventDefault();
@@ -37,12 +38,23 @@ addCourse = (course, id) => {
   `;
   list.innerHTML += html;
 };
+// to delete course and update UI
+deleteCourse = (id) => {
+  const courses = document.querySelectorAll('li');
+  courses.forEach((course) => {
+    if (course.getAttribute('data-id') === id) {
+      course.remove();
+    }
+  });
+};
 // to get data from firstore
-db.collection('courses')
-  .get()
-  .then((res) =>
-    res.docs.forEach((course) => {
-      addCourse(course.data(), course.id);
-    })
-  )
-  .catch((err) => console.log(err));
+db.collection('courses').onSnapshot((snap) => {
+  console.log(snap.docChanges());
+  snap.docChanges().forEach((course) => {
+    if (course.type === 'added') {
+      addCourse(course.doc.data(), course.doc.id);
+    } else {
+      deleteCourse(course.doc.id);
+    }
+  });
+});
